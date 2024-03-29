@@ -1,55 +1,61 @@
-#import os
-#import google.generativeai as genai
-
 import os
-#from dotenv import load_dotenv
-import csv
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain.prompts import PromptTemplate
-from langchain_text_splitters import CharacterTextSplitter
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
+import google.generativeai as genai
 
-# Load environment variables from .env file
-#load_dotenv()
+# Set up Google API Key
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+genai.configure(api_key=GOOGLE_API_KEY)
 
-# Get Google API key from environment variables
-google_api_key = os.getenv("GOOGLE_API_KEY")
+# Initialize the Chat model
+llm = ChatGoogleGenerativeAI(model="gemini-pro")
 
-# Load the models
-llm = ChatGoogleGenerativeAI(model="gemini-pro", api_key=google_api_key)
-embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+# Initialize the Chroma vector store
+chroma = Chroma(persist_directory="../raw_data/chroma_db", embedding_function=SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2"))
 
-# Load CSV and create chunks
-csv_file = "raw_data/movies.csv"
-text_chunks = []
-with open(csv_file, 'r', encoding='utf-8') as file:
-    csv_reader = csv.reader(file)
-    for row in csv_reader:
-        text_chunks.extend(row)
+# Convert Chroma to a retriever
+retriever = chroma.as_retriever()
 
-# Turn the chunks into embeddings and store them in Chroma
-vectordb = Chroma.from_documents(text_chunks, embeddings)
-
-# Configure Chroma as a retriever with top_k=5
-retriever = vectordb.as_retriever(search_kwargs={"k": 5})
-
-# Create the retrieval chain
+# Define the template for prompts
 template = """
-You are a helpful AI assistant.
+You are a helpful AI assistant. That knows everything about movies.
 Answer based on the context provided.
 context: {context}
 input: {input}
 answer:
 """
+
+# Create a PromptTemplate from the template
 prompt = PromptTemplate.from_template(template)
+
+# Create a chain for combining documents
 combine_docs_chain = create_stuff_documents_chain(llm, prompt)
+
+# Create a retrieval chain
 retrieval_chain = create_retrieval_chain(retriever, combine_docs_chain)
 
-# Invoke the retrieval chain
-response = retrieval_chain.invoke({"input":"How do I apply for personal leave?"})
+def interact_with_chatbot():
+    print("Chatbot: Hi! What kind of movie do you want to watch today?")
+    while True:
+        user_input = input("You: ")
 
-# Print the answer to the question
-print(response["answer"])
+        # Provide some context related to movies
+        context = "You are currently discussing movie preferences."
+
+        # Invoke the retrieval chain with provided context and input
+        response = retrieval_chain.invoke({"input": user_input, "context": context})
+
+        # Print the answer to the user's input
+        print("Chatbot:", response["answer"])
+
+        # Check for exit command
+        if user_input.lower() == 'exit':
+            print("Exiting chatbot...")
+            break
+
+if __name__ == "__main__":
+    interact_with_chatbot()
