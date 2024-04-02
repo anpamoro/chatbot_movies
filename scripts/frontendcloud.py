@@ -11,7 +11,7 @@ from langchain_community.embeddings.sentence_transformer import SentenceTransfor
 import google.generativeai as genai
 
 # Set up Google Cloud Storage client
-storage_client = storage.Client()
+storage_client = storage.Client.from_service_account_json("decent-creek-417601-3948dcbc2f9c.json")
 
 # Define function to download chroma_db directory from GCS
 def download_chroma_db():
