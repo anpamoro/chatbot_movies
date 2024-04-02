@@ -10,8 +10,34 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 import google.generativeai as genai
 
+gcp_type = st.secrets["type"]
+gcp_p_id = st.secrets["project_id"]
+gcp_pr_id = st.secrets["private_key_id"]
+gcp_pr_key = st.secrets["private_key"]
+gcp_cl_em = st.secrets["client_email"]
+gcp_cl_id = st.secrets["client_id"]
+gcp_auth_uri = st.secrets["auth_uri"]
+gcp_token_uri = st.secrets["token_uri"]
+gcp_auth_provider = st.secrets["auth_provider_x509_cert_url"]
+gcp_client_x509_cert_url = st.secrets["client_x509_cert_url"]
+gcp_universe_domain = st.secrets["universe_domain"]
+
+#json credentials
+json_credentials = {"type" : gcp_type,
+                    "project_id" : gcp_p_id,
+                    "private_key_id" : gcp_pr_id,
+                    "private_key" : gcp_pr_key,
+                    "client_email" : gcp_cl_em,
+                    "client_id" : gcp_auth_uri,
+                    "auth_uri" : gcp_token_uri,
+                    "token_uri" : gcp_auth_uri,
+                    "auth_provider_x509_cert_url" : gcp_auth_provider,
+                    "client_x509_cert_url" : gcp_client_x509_cert_url,
+                    "universe_domain" : gcp_universe_domain,
+}
+
 # Set up Google Cloud Storage client
-storage_client = storage.Client.from_service_account_json("decent-creek-417601-3948dcbc2f9c.json")
+storage_client = storage.Client.from_service_account_json(json_credentials)
 
 # Define function to download chroma_db directory from GCS
 def download_chroma_db():
