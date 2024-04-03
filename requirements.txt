@@ -225,3 +225,4 @@ uvicorn==0.29.0
 streamlit
 python-multipart
 google-cloud-storage
+sqlite3 == 3.35.0
