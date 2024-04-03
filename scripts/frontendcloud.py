@@ -50,13 +50,13 @@ with open(json_file_path, "w") as json_file:
     json.dump(json_credentials, json_file, indent=4)
 
 # Read the JSON file
-with open(json_file_path, "r") as json_file:
-    data_json = json.load(json_file)
+#with open(json_file_path, "r") as json_file:
+    #data_json = json.load(json_file)
 
 
 
 # Set up Google Cloud Storage client
-storage_client = storage.Client.from_service_account_json(data_json)
+storage_client = storage.Client.from_service_account_json(json_file_path)
 
 # Define function to download chroma_db directory from GCS
 def download_chroma_db():
