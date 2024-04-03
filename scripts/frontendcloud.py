@@ -2,6 +2,9 @@ import streamlit as st
 from google.cloud import storage
 import os
 
+import json
+import tempfile
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -36,8 +39,24 @@ json_credentials = {"type" : gcp_type,
                     "universe_domain" : gcp_universe_domain,
 }
 
+# Create a temporary directory
+temp_dir = tempfile.mkdtemp()
+
+# Path to the JSON file in the temporary directory
+json_file_path = os.path.join(temp_dir, "credentials.json")
+
+# Write the data to the JSON file
+with open(json_file_path, "w") as json_file:
+    json.dump(json_credentials, json_file, indent=4)
+
+# Read the JSON file
+with open(json_file_path, "r") as json_file:
+    data_json = json.load(json_file)
+
+
+
 # Set up Google Cloud Storage client
-storage_client = storage.Client.from_service_account_json(json_credentials)
+storage_client = storage.Client.from_service_account_json(data_json)
 
 # Define function to download chroma_db directory from GCS
 def download_chroma_db():
