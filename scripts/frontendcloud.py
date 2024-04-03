@@ -39,24 +39,14 @@ json_credentials = {"type" : gcp_type,
                     "universe_domain" : gcp_universe_domain,
 }
 
-# Create a temporary directory
-temp_dir = tempfile.mkdtemp()
+# Create a temporary file to store the JSON data
+with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+    # Write the JSON data to the temporary file
+    json.dump(json_credentials, temp_file)
+    temp_file_path = temp_file.name
 
-# Path to the JSON file in the temporary directory
-json_file_path = os.path.join(temp_dir, "credentials.json")
-
-# Write the data to the JSON file
-with open(json_file_path, "w") as json_file:
-    json.dump(json_credentials, json_file, indent=4)
-
-# Read the JSON file
-#with open(json_file_path, "r") as json_file:
-    #data_json = json.load(json_file)
-
-
-
-# Set up Google Cloud Storage client
-storage_client = storage.Client.from_service_account_json(json_file_path)
+# Create the client using the temporary file path
+storage_client = storage.Client.from_service_account_json(temp_file_path)
 
 # Define function to download chroma_db directory from GCS
 def download_chroma_db():
