@@ -116,32 +116,61 @@ class Chatbot:
     def reset_history(self):
         self.conversation_history = []
 
-def interact_with_chatbot():
-    # Initialize chatbot
-    chatbot = Chatbot()
+    def interact_with_chatbot():
+        # Initialize chatbot
+        chatbot = Chatbot()
+        print("Chatbot: Hi! What kind of movie do you want to watch today?")
 
-    # Streamlit UI
-    st.title("Chatbot Demo")
+        while True:
+            user_input = str(input("You: "))
 
-    st.write("Chatbot: Hi! What kind of movie do you want to watch today?")
+            #Check for a new conversation
+            if user_input.lower() == 'reset':
+                chatbot.reset_history()
+                print('Chatbot restarted')
+                print("If you wish to exit type exit")
+                user_input = str(input("You: "))
 
-    # Text input for user input
-    user_input = st.text_input("You:")
+            # Check for exit command
+            if user_input.lower() == 'exit':
+                print("Exiting chatbot...")
+                break
 
-    # Button to send user input
-    if st.button("Send"):
-        # Check for reset or exit commands
-        if user_input.lower() == 'reset':
-            chatbot.reset_history()
-            st.write('Chatbot restarted')
-            st.write("If you wish to exit type exit")
-        elif user_input.lower() == 'exit':
-            st.write("Exiting chatbot...")
-        else:
-            # Invoke the ask method with provided input
+            # Invoke the ask method with provided input and conversation history
             response = chatbot.ask(user_input)
-            st.write("Chatbot:", response)
-            st.write("If you wish to exit type exit, if you wish to talk about other movies type reset")
+            # Print the answer to the user's input
+            print("Chatbot:", response)
+            print("If you wish to exit type exit, if you wish to talk about other movies type reset")
 
-if __name__ == "__main__":
-    interact_with_chatbot()
+#Uncomment in case you run in the terminal
+#interact_with_chatbot()
+
+st.title(":robot_face: Chatbot Movies")
+st.caption("Explore movie recommendations and ask questions! :movie_camera:")
+
+#st.title("Movies Chatbot App")
+chatbot = Chatbot()
+
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = [{"role": "assistant", "content":
+        "Hi, I'm a chatbot who knows about movies. What kind of movie do you want to watch today?"}]
+
+# Display chat messages from history on app rerun
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# React to user input
+if prompt := st.chat_input("Ask me about movies"):
+    # Display user message in chat message container
+    st.chat_message("user").markdown(prompt)
+    # Add user message to chat history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    response = chatbot.ask(prompt)
+
+    # Display assistant response in chat message container
+    with st.chat_message("assistant"):
+        st.markdown(response)
+    # Add assistant response to chat history
+    st.session_state.messages.append({"role": "assistant", "content": response})
