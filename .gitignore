@@ -25,3 +25,4 @@ raw_data/
 *.ipynb_checkpoints/
 *.env*
 __pycache__
+secrets.txt
