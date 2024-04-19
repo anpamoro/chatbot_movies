@@ -53,32 +53,32 @@ class Chatbot:
     def reset_history(self):
         self.conversation_history = []
 
+#This function also works outside class chatbot
+    def interact_with_chatbot():
+        # Initialize chatbot
+        chatbot = Chatbot()
+        print("Chatbot: Hi! What kind of movie do you want to watch today?")
 
-def interact_with_chatbot():
-    # Initialize chatbot
-    chatbot = Chatbot()
-    print("Chatbot: Hi! What kind of movie do you want to watch today?")
-
-    while True:
-        user_input = str(input("You: "))
-
-        #Check for a new conversation
-        if user_input.lower() == 'reset':
-            chatbot.reset_history()
-            print('Chatbot restarted')
-            print("If you wish to exit type exit")
+        while True:
             user_input = str(input("You: "))
 
-        # Check for exit command
-        if user_input.lower() == 'exit':
-            print("Exiting chatbot...")
-            break
+            #Check for a new conversation
+            if user_input.lower() == 'reset':
+                chatbot.reset_history()
+                print('Chatbot restarted')
+                print("If you wish to exit type exit")
+                user_input = str(input("You: "))
 
-        # Invoke the ask method with provided input and conversation history
-        response = chatbot.ask(user_input)
-        # Print the answer to the user's input
-        print("Chatbot:", response)
-        print("If you wish to exit type exit, if you wish to talk about other movies type reset")
+            # Check for exit command
+            if user_input.lower() == 'exit':
+                print("Exiting chatbot...")
+                break
 
+            # Invoke the ask method with provided input and conversation history
+            response = chatbot.ask(user_input)
+            # Print the answer to the user's input
+            print("Chatbot:", response)
+            print("If you wish to exit type exit, if you wish to talk about other movies type reset")
 
-interact_with_chatbot()
+#Uncomment in case you run in the terminal
+#interact_with_chatbot()
