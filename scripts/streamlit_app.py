@@ -5,7 +5,7 @@ from main import Chatbot
 st.title(":robot_face: Chatbot Movies")
 st.caption("Explore movie recommendations and ask questions! :movie_camera:")
 
-#st.title("Movies Chatbot App")
+#Initialize chatbot
 chatbot = Chatbot()
 
 # Initialize chat history
