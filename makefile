@@ -1,3 +1,3 @@
 #################### PACKAGE ACTIONS ###################
-run_api:
-	uvicorn api.api:app --reload
+run_streamlit:
+	streamlit run streamlit_app.py
